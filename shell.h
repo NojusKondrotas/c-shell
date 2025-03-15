@@ -1,26 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int, char*);
+#define SHELL_RL_BUFFERSIZE 1024
 
-void shell_loop(){
-    char *line;
-    char **args;
-    int status;
+void zero(char *str, int size){
+    char *p;
+    int n;
 
-    do{
-        printf("> ");
-        line = shell_read();
-        args = shell_line_split(line);
-        status = shell_execute(args);
+    for(n=0, p=str; n < size; p++, n++)
+        *p = 0;
 
-        free(line);
-        free(args);
-    } while(status);
+    return;
 }
-
-char* shell_read();
-
-char** shell_line_split(char*);
-
-int shell_execute(char**);
