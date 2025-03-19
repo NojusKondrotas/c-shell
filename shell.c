@@ -33,7 +33,7 @@ void shell_loop(){
 }
 
 char *shell_read(){
-    int buffer_size = SHELL_RL_BUFFERSIZE;
+    int buffer_size = SHELL_RL_BUFSIZE;
     int position = 0;
     char *buffer = malloc(sizeof(char) * buffer_size);
     //zero(buffer, buffer_size);
@@ -57,7 +57,7 @@ char *shell_read(){
         position++;
 
         if(position >= buffer_size){
-            buffer_size += SHELL_RL_BUFFERSIZE;
+            buffer_size += SHELL_RL_BUFSIZE;
             buffer = realloc(buffer, buffer_size);
             if(!buffer){
                 fprintf(stderr, "shell: allocation error\n");
@@ -68,7 +68,33 @@ char *shell_read(){
 }
 
 char **shell_line_split(char* line){
-    return 0;
+    int bufsize = SHELL_TOK_BUFSIZE, position = 0;
+    char **tokens = malloc(bufsize * sizeof(char));
+    char *token;
+
+    if(!tokens){
+        fprintf(stderr, "shell: allocation error\n");
+        exit(EXIT_FAILURE);
+    }
+
+    token = strtok(line, SHELL_TOK_DELIM);
+    while(token != NULL){
+        tokens[position++] = token;
+
+        if(position >= bufsize){
+            bufsize += SHELL_TOK_BUFSIZE;
+            tokens = realloc(tokens, bufsize * sizeof(char));
+            if(!tokens){
+                fprintf(stderr, "shell: allocation error\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        token = strtok(NULL, SHELL_TOK_DELIM);
+    }
+    tokens[position] = NULL;
+
+    return tokens;
 }
 
 int shell_execute(char** args){
